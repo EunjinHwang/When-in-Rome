@@ -30,7 +30,7 @@ int main()
             if (!isArabic && isdigit(c)) {
                 isArabic = true;
             }
-            if (!isRoman && !isdigit(c)) {
+            if (!isRoman && !isdigit(c) && c != '.') {
                 isRoman = true;
             }
         }
@@ -41,15 +41,27 @@ int main()
         };
 
         if (isArabic && !isRoman) {
-            int num = std::stoi(input);
             std::string result = "";
+            int integerPart = std::stoi(input);
+            double fractionPart = std::stod(input) - integerPart;
+
             for (auto& symbol : symbols) {
-                while (num >= symbol.first) {
-                    result += symbol.second;
-                    num -= symbol.first;
-                    
+                while (integerPart >= symbol.first && symbol.second != "S" && symbol.second != ".") {
+                        result += symbol.second;
+                        integerPart -= symbol.first;        
                 }
             }
+            if (fractionPart > 0) {
+                if (fractionPart >= 0.5) {
+                    result += "S";
+                    fractionPart -= 0.5;
+                }
+                int fractionValue = floor(fractionPart * 12);
+                for (int i = 0; i < fractionValue; ++i) {
+                    result += ".";
+                }
+            }
+            
             std::cout << input << " is " << result << std::endl;
         }
         else if (isRoman && !isArabic) {
