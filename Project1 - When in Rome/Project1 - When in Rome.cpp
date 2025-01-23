@@ -3,6 +3,7 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <iomanip>
 
 int main()
 {
@@ -145,7 +146,7 @@ int main()
                         std::cout << "invalid Input" << std::endl;
                     }
                     else {
-                        std::cout << temp << " is " << result << std::endl;
+                        std::cout << std::fixed << std::setprecision(0) << temp << " is " << result << std::endl;
                     }
                 }
             }
