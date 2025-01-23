@@ -26,13 +26,38 @@ int main()
 
         bool isArabic = false;
         bool isRoman = false;
+        bool isApostrophus = false;
+        bool hasDot = false;
         for (char c : input) {
+            if (c == '.') {
+                hasDot = true;
+            }
             if (!isArabic && isdigit(c)) {
                 isArabic = true;
             }
-            if (!isRoman && !isdigit(c)) {
+            if (!isRoman && !isdigit(c) && c != '.') {
                 isRoman = true;
             }
+
+            if (c == ')') {
+                isApostrophus = true;
+            }
+        }
+
+        if (hasDot) {
+            if (!isRoman && !isArabic) {
+                isRoman = true;
+            }
+
+            if (!isRoman && isArabic) {
+                if (input[0] == '.') {
+                    std::string temp = "0";
+                    temp += input;
+                    input = temp;
+                }
+            }
+
+
         }
 
         std::vector<std::pair<int, std::string>> symbols = {
@@ -40,7 +65,7 @@ int main()
                 {50, "L"}, {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"},{1, "I"}, {0, "S"}, {0, "."}
         };
 
-        if (isArabic && !isRoman) {
+        if (isArabic && !isApostrophus) {
             std::string result = "";
             int integerPart = std::stoi(input);
             double fractionPart = std::stod(input) - integerPart;
@@ -61,46 +86,103 @@ int main()
                     result += ".";
                 }
             }
-            
-            std::cout << input << " is " << result << std::endl;
+            if (result == "") {
+                std::cout << "invalid Input" << std::endl;
+            }
+            else {
+                std::cout << input << " is " << result << std::endl;
+            }
         }
-        else if (isRoman && !isArabic) {
-            int i = 0;
+        else if (isRoman) {
             double result = 0;
-            std::string s = "";
-            s += input[i];
-
-            for (auto symbol = symbols.begin(); symbol != symbols.end(); symbol++) {
-                while (s == symbol->second) {
-                    if (s == "S") {
-                        result = (result * 2 + 1) / 2;
+            int i = 0;
+            bool isEndReverseC = false;
+            std::string temp = input;
+            if (isApostrophus) {
+                int c_num=0, i_num=0, rc_num = 0;
+                while ((input[i] == 'C' || input[i] == 'I' || input[i] == ')') && !isEndReverseC)
+                {
+                    if (input[i] == ')') {
+                        rc_num++;
+                        if (i < input.length() && input[i+1] != ')') {
+                            isEndReverseC = true;
+                        }
                     }
-
-                    if (s == ".") {
-                        result += 1 / (double)12;
-                    }
-
-                    result += symbol->first;
-                    s = input[++i];
+                    else if (input[i] == 'C') c_num++;
+                    else i_num++;
+                    i++;
                 }
 
-                if (i == input.length()) {
-                    std::cout << input << " is " << result << std::endl;
-                    break;
+                if (i_num > 1) {
+                    std::cout << "Invalid input." << std::endl;
+                    continue;
                 }
 
-                s += input[++i];
+                if (c_num > rc_num) {
+                    std::cout << input << " contains unbalanced apostrophus." << std::endl;
+                    continue;
+                }
+                input = input.substr(i - (rc_num - c_num));
 
-                auto nextSymbol = std::next(symbol);
-                if (!(nextSymbol != symbols.end() && s == nextSymbol->second)) {
-                    s = s[0];
-                    i--;
+                if (c_num > 0) {
+                    result = 100;
+                    for (int i = c_num; i > 0; i--) {
+                        result *= 10;
+                    }
+                }
+
+                if (rc_num - c_num > 0) {
+                    int temp = 50;
+                    for (int i = rc_num - c_num; i > 0; i--) {
+                        temp *= 10;
+                    }
+                    result += temp;
+                    input = input.substr(rc_num - c_num);
+                }
+                
+                if (input.length() == 0) {
+                    if (result == 0) {
+                        std::cout << "invalid Input" << std::endl;
+                    }
+                    else {
+                        std::cout << temp << " is " << result << std::endl;
+                    }
                 }
             }
+            
+            if (input.length() > 0) {
+                i = 0;
+                std::string s = "";
+                s += input[i];
 
-            /*if (result == 0) {
-                std::cout << "You have entered an invalid character. Please try again." << std::endl;
-            }*/
+                for (auto symbol = symbols.begin(); symbol != symbols.end(); symbol++) {
+                    while (s == symbol->second) {
+                        if (s == "S") {
+                            result = (result * 2 + 1) / 2;
+                        }
+
+                        if (s == ".") {
+                            result += 1 / (double)12;
+                        }
+
+                        result += symbol->first;
+                        s = input[++i];
+                    }
+
+                    if (i == input.length()) {
+                        std::cout << temp << " is " << result << std::endl;
+                        break;
+                    }
+
+                    s += input[++i];
+
+                    auto nextSymbol = std::next(symbol);
+                    if (!(nextSymbol != symbols.end() && s == nextSymbol->second)) {
+                        s = s[0];
+                        i--;
+                    }
+                }
+            }
         }
         else {
             std::cout << "Invalid input. Please enter either a Roman numeral or an Arabic number." << std::endl;
