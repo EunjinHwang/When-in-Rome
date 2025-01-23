@@ -30,7 +30,7 @@ int main()
             if (!isArabic && isdigit(c)) {
                 isArabic = true;
             }
-            if (!isRoman && !isdigit(c) && c != '.') {
+            if (!isRoman && !isdigit(c)) {
                 isRoman = true;
             }
         }
