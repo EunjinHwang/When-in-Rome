@@ -47,9 +47,7 @@ int main()
                 while (num >= symbol.first) {
                     result += symbol.second;
                     num -= symbol.first;
-                    if (num > 0 && num < 1) {
-
-                    }
+                    
                 }
             }
             std::cout << input << " is " << result << std::endl;
