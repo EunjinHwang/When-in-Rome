@@ -40,7 +40,7 @@ int main()
                 isRoman = true;
             }
 
-            if (c == ')') {
+            if (!isApostrophus && c == ')') {
                 isApostrophus = true;
             }
         }
@@ -63,7 +63,7 @@ int main()
 
         std::vector<std::pair<int, std::string>> symbols = {
                 {1000, "M"}, {900, "CM"}, {500, "D"}, {400, "CD"},{100, "C"}, {90, "XC"},
-                {50, "L"}, {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"},{1, "I"}, {0, "S"}, {0, "."}
+                {50, "L"}, {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"},{1, "I"}, {0, "S"}, {0, "."}, {0, "-"}, {0, "_"}
         };
 
         if (isArabic && !isApostrophus) {
@@ -168,6 +168,12 @@ int main()
 
                         result += symbol->first;
                         s = input[++i];
+
+                        if (input[i] == '-' || input[i] == '_') {
+                            result *= 1000;
+                            s = input[++i];
+                            symbol = symbols.begin();
+                        }
                     }
 
                     if (i == input.length()) {
@@ -176,7 +182,6 @@ int main()
                     }
 
                     s += input[++i];
-
                     auto nextSymbol = std::next(symbol);
                     if (!(nextSymbol != symbols.end() && s == nextSymbol->second)) {
                         s = s[0];
