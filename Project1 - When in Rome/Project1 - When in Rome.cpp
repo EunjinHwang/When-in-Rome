@@ -63,20 +63,44 @@ int main()
 
         std::vector<std::pair<int, std::string>> symbols = {
                 {1000, "M"}, {900, "CM"}, {500, "D"}, {400, "CD"},{100, "C"}, {90, "XC"},
-                {50, "L"}, {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"},{1, "I"}, {0, "S"}, {0, "."}, {0, "-"}, {0, "_"}
+                {50, "L"}, {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"},{1, "I"}, {0, "S"}, {0, "."}
         };
 
         if (isArabic && !isApostrophus) {
             std::string result = "";
             int integerPart = std::stoi(input);
             double fractionPart = std::stod(input) - integerPart;
+            int len = input.length();
+            while (integerPart >= 4000) {
+                int criteria = 1;
+                for (int i = 0; i < len / 3; i++) {
+                    criteria *= 1000;
+                }
+                int pending = integerPart %  criteria;
+                integerPart = integerPart / criteria;
+            
+                for (auto& symbol : symbols) {
+
+                    while (integerPart >= symbol.first && symbol.second != "S" && symbol.second != ".") {
+                        result += symbol.second;
+                        integerPart -= symbol.first;
+                    }
+                }
+
+                result += "_";
+                integerPart = pending;
+                len = std::to_string(integerPart).length();
+            }
 
             for (auto& symbol : symbols) {
+
                 while (integerPart >= symbol.first && symbol.second != "S" && symbol.second != ".") {
-                        result += symbol.second;
-                        integerPart -= symbol.first;        
+                    result += symbol.second;
+                    integerPart -= symbol.first;
                 }
             }
+            
+            
             if (fractionPart > 0) {
                 if (fractionPart >= 0.5) {
                     result += "S";
@@ -99,6 +123,7 @@ int main()
             int i = 0;
             bool isEndReverseC = false;
             std::string temp = input;
+
             if (isApostrophus) {
                 int c_num=0, i_num=0, rc_num = 0;
                 while ((input[i] == 'C' || input[i] == 'I' || input[i] == ')') && !isEndReverseC)
